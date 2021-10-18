@@ -120,7 +120,7 @@ function createQuestion(i) {
 
     // Inserir um evento do clique no botão
     answerTemplate.addEventListener("click", function() {
-      console.log(this)
+      checkAnswer(this);
     })
   });
 
@@ -128,5 +128,86 @@ function createQuestion(i) {
   actualQuestion++;
 }
 
+// Verificando resposta do usuário
+function checkAnswer(btn) {
+  // Selecionando todos os botões
+  const buttons = answersBox.querySelectorAll("button");
+
+  // Verifica se a resposta está correta e adiciona classes nos botões
+  buttons.forEach(function(button) {
+    if(button.getAttribute("correct-answer") === "true") {
+
+      button.classList.add("correct-answer");
+
+      // checa se o usuário acertou a pergunta
+      if(btn === button) {
+        // incremento dos pontos
+        points++;
+      }
+
+    } else {
+
+      button.classList.add("wrong-answer");
+
+    }
+  });
+
+  // Exibir próxima pergunta
+  nextQuestion();
+};
+
+// Exibe a próxima pergunta do Quizz
+function nextQuestion() {
+
+  // timer para o usúario ver a resposta
+  setTimeout(function() {
+    // verifica se ainda existe perguntas
+    if(actualQuestion >= questions.length) {
+      // apresentar a mensagem de sucesso
+      showSuccessMessage();
+      return;
+    }
+
+    createQuestion(actualQuestion);
+  },1500)
+};
+
+// Exibe a tela final
+function showSuccessMessage() {
+  hideOrShowQuizz();
+
+  //calcular o score
+  const score = ((points / questions.length) * 100).toFixed(2);
+
+  // trocar dados da tela de sucesso
+  const displayScore = document.querySelector('#display-score span');
+  displayScore.textContent = score.toString();
+
+  // Alterar o número de perguntas corretas
+  const correctAnswers = document.querySelector("#correct-answers");
+  correctAnswers.textContent = points;
+
+  // Altera a quantidade de perguntas
+  const totalQuestions = document.querySelector("#questions-qty");
+  totalQuestions.textContent = questions.length;
+};
+
+// Mostra ou esconde o score
+function hideOrShowQuizz() {
+  quizzContainer.classList.toggle("hide");
+  scoreContainer.classList.toggle("hide");
+};
+
+// Reiniciar Quizz
+const restartBtn = document.querySelector('#restart')
+restartBtn.addEventListener("click", function() {
+  // zerar o jogo
+  actualQuestion = 0;
+  points = 0;
+
+  hideOrShowQuizz();
+  init();
+});
+ 
 // Inicialização do Quizz
 init();
